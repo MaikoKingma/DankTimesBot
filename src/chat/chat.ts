@@ -1,4 +1,5 @@
 import * as moment from "moment-timezone";
+import { ChatSettings } from "../chat-setting/chat-settings";
 import { DankTime } from "../dank-time/dank-time";
 import { Leaderboard } from "../leaderboard/leaderboard";
 import { User } from "../user/user";
@@ -38,45 +39,26 @@ export class Chat {
   public awaitingResetConfirmation = -1;
 
   private myId: number;
-  private myTimezone: string;
   private myLastHour: number;
   private myLastMinute: number;
-  private myNumberOfRandomTimes: number;
-  private myPointsPerRandomTime: number;
-  private myMultiplier: number;
   private myLastLeaderboard?: Leaderboard = undefined;
 
   /**
    * Creates a new Chat object.
    * @param id The chat's unique Telegram id.
-   * @param timezone The timezone the users are in.
-   * @param running Whether this bot is running for this chat.
-   * @param numberOfRandomTimes The number of randomly generated dank times to generate each day.
-   * @param pointsPerRandomTime The number of points each randomly generated dank time is worth.
    * @param lastHour The hour of the last valid dank time being proclaimed.
    * @param lastMinute The minute of the last valid dank time being proclaimed.
    * @param users A map with the users, indexed by user id's.
    * @param dankTimes The dank times known in this chat.
    * @param randomDankTimes The daily randomly generated dank times in this chat.
-   * @param notifications Whether this chat automatically sends notifications for dank times.
-   * @param multiplier The multiplier applied to the score of the first user to score.
-   * @param autoLeaderboards Whether this chat automatically posts leaderboards after dank times occured.
-   * @param firstNotifications Whether this chat announces the first user to score.
-   * @param hardcoreMode Whether this chat punishes users that haven't scored in the last 24 hours.
+   * @param settings The chat's settings.
    */
-  constructor(id: number, timezone = "Europe/Amsterdam", public running = false, numberOfRandomTimes = 1,
-              pointsPerRandomTime = 10, lastHour = 0, lastMinute = 0, private readonly users = new Map<number, User>(),
+  constructor(id: number, lastHour = 0, lastMinute = 0, private readonly users = new Map<number, User>(),
               public readonly dankTimes = new Array<DankTime>(), public randomDankTimes = new Array<DankTime>(),
-              public notifications = true, multiplier = 2, public autoLeaderboards = true,
-              public firstNotifications = true, public hardcoreMode = false) {
-
+              public readonly settings: ChatSettings) {
     this.id = id;
-    this.timezone = timezone;
     this.lastHour = lastHour;
     this.lastMinute = lastMinute;
-    this.numberOfRandomTimes = numberOfRandomTimes;
-    this.pointsPerRandomTime = pointsPerRandomTime;
-    this.multiplier = multiplier;
   }
 
   public set id(id: number) {
@@ -88,17 +70,6 @@ export class Chat {
 
   public get id(): number {
     return this.myId;
-  }
-
-  public set timezone(timezone: string) {
-    if (moment.tz.zone(timezone) === null) {
-      throw new RangeError("Invalid timezone! Examples: 'Europe/Amsterdam', 'UTC'.");
-    }
-    this.myTimezone = timezone;
-  }
-
-  public get timezone(): string {
-    return this.myTimezone;
   }
 
   public set lastHour(lastHour: number) {
@@ -121,40 +92,6 @@ export class Chat {
 
   public get lastMinute(): number {
     return this.myLastMinute;
-  }
-
-  public set numberOfRandomTimes(numberOfRandomTimes: number) {
-    if (numberOfRandomTimes < 0 || numberOfRandomTimes > 24 || numberOfRandomTimes % 1 !== 0) {
-      throw new RangeError("The number of times must be a whole number between 0 and 24!");
-    }
-    this.myNumberOfRandomTimes = numberOfRandomTimes;
-    this.randomDankTimes.splice(numberOfRandomTimes);
-  }
-
-  public get numberOfRandomTimes(): number {
-    return this.myNumberOfRandomTimes;
-  }
-
-  public set multiplier(multiplier: number) {
-    if (multiplier < 1 || multiplier > 10) {
-      throw new RangeError("The multiplier must be a number between 1 and 10!");
-    }
-    this.myMultiplier = multiplier;
-  }
-
-  public get multiplier(): number {
-    return this.myMultiplier;
-  }
-
-  public set pointsPerRandomTime(pointsPerRandomTime: number) {
-    if (pointsPerRandomTime < 1 || pointsPerRandomTime > 100 || pointsPerRandomTime % 1 !== 0) {
-      throw new RangeError("The points must be a whole number between 1 and 100!");
-    }
-    this.myPointsPerRandomTime = pointsPerRandomTime;
-  }
-
-  public get pointsPerRandomTime(): number {
-    return this.myPointsPerRandomTime;
   }
 
   /**
