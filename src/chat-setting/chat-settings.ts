@@ -60,4 +60,17 @@ export class ChatSettings {
     });
     return json;
   }
+
+  /**
+   * Attempts to get the value of the setting with the supplied name. Returns
+   * undefined if the setting does not exist, though this should never happen.
+   * @param settingName The name of the setting to get the value of.
+   */
+  public tryGet(settingName: string): any {
+    const setting = this.settings.get(settingName);
+    if (setting === undefined) {
+      return undefined;
+    }
+    return setting.value;
+  }
 }

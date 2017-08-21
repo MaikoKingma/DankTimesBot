@@ -99,7 +99,7 @@ const dailyUpdate = new CronJob("0 0 0 * * *", () => {
     + " users that haven't scored in the past 24 hours!");
   const now = moment().unix();
   chatRegistry.chats.forEach((chat) => {
-    if (chat.running) {
+    if (chat.settings.tryGet("running")) {
 
       // Unschedule
       scheduler.unscheduleRandomDankTimesOfChat(chat);

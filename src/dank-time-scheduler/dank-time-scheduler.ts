@@ -27,7 +27,7 @@ export class DankTimeScheduler {
   public scheduleAllOfChat(chat: Chat): void {
 
     // If the chat ain't running, schedule nothing.
-    if (!chat.running) {
+    if (!chat.settings.tryGet("running")) {
       return;
     }
 
@@ -35,12 +35,12 @@ export class DankTimeScheduler {
     this.scheduleRandomDankTimesOfChat(chat);
 
     // Schedule NORMAL dank time notifications, if desired.
-    if (chat.notifications) {
+    if (chat.settings.tryGet("notifications")) {
       this.scheduleDankTimesOfChat(chat);
     }
 
     // Schedule auto-leaderboards, if desired.
-    if (chat.autoLeaderboards) {
+    if (chat.settings.tryGet("autoleaderboards")) {
       this.scheduleAutoLeaderboardsOfChat(chat);
     }
   }
@@ -146,10 +146,10 @@ export class DankTimeScheduler {
     this.dankTimeNotifications.push({
       chatId: chat.id,
       cronJob: new CronJob("0 " + dankTime.minute + " " + dankTime.hour + " * * *", () => {
-        if (chat.running && chat.notifications) {
+        if (chat.settings.tryGet("running") && chat.settings.tryGet("notifications")) {
           thisRef.tgClient.sendMessage(chat.id, "It's dank o'clock! Type '" + dankTime.texts[0] + "' for points!");
         }
-      }, undefined, true, chat.timezone),
+      }, undefined, true, chat.settings.tryGet("timezone")),
       hour: dankTime.hour,
       minute: dankTime.minute,
     });
@@ -163,10 +163,10 @@ export class DankTimeScheduler {
     this.randomDankTimeNotifications.push({
       chatId: chat.id,
       cronJob: new CronJob("0 " + dankTime.minute + " " + dankTime.hour + " * * *", () => {
-        if (chat.running) {
+        if (chat.settings.tryGet("running")) {
           thisRef.tgClient.sendMessage(chat.id, "Surprise dank time! Type '" + dankTime.texts[0] + "' for points!");
         }
-      }, undefined, true, chat.timezone),
+      }, undefined, true, chat.settings.tryGet("timezone")),
       hour: dankTime.hour,
       minute: dankTime.minute,
     });
@@ -195,10 +195,10 @@ export class DankTimeScheduler {
     this.autoLeaderBoards.push({
       chatId: chat.id,
       cronJob: new CronJob("0 " + minute + " " + hour + " * * *", () => {
-        if (chat.running && chat.autoLeaderboards && chat.leaderboardChanged()) {
+        if (chat.settings.tryGet("running") && chat.settings.tryGet("autoleaderboards") && chat.leaderboardChanged()) {
           thisRef.tgClient.sendMessage(chat.id, chat.generateLeaderboard());
         }
-      }, undefined, true, chat.timezone),
+      }, undefined, true, chat.settings.tryGet("timezone")),
       hour: dankTime.hour,
       minute: dankTime.minute,
     });

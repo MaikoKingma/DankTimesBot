@@ -12,28 +12,12 @@ export class Chat {
    * Returns a new Chat parsed from a literal.
    */
   public static fromJSON(literal: BasicChat): Chat {
-
-    // For backwards compatibility with v.1.1.0.
-    if (!literal.multiplier) {
-      literal.multiplier = 2;
-    }
-    if (!literal.autoLeaderboards) {
-      literal.autoLeaderboards = true;
-    }
-    if (!literal.firstNotifications) {
-      literal.firstNotifications = true;
-    }
-
     const dankTimes = new Array<DankTime>();
     literal.dankTimes.forEach((dankTime) => dankTimes.push(DankTime.fromJSON(dankTime)));
-
     const users = new Map();
     literal.users.forEach((user) => users.set(user.id, User.fromJSON(user)));
-
-    return new Chat(literal.id, literal.timezone, literal.running, literal.numberOfRandomTimes,
-      literal.pointsPerRandomTime, literal.lastHour, literal.lastMinute, users, dankTimes, [],
-      literal.notifications, literal.multiplier, literal.autoLeaderboards, literal.firstNotifications,
-      literal.hardcoreMode);
+    return new Chat(literal.id, literal.lastHour, literal.lastMinute, users, dankTimes, [],
+      new ChatSettings(literal.settings));
   }
 
   public awaitingResetConfirmation = -1;
@@ -55,7 +39,7 @@ export class Chat {
    */
   constructor(id: number, lastHour = 0, lastMinute = 0, private readonly users = new Map<number, User>(),
               public readonly dankTimes = new Array<DankTime>(), public randomDankTimes = new Array<DankTime>(),
-              public readonly settings: ChatSettings) {
+              public readonly settings = new ChatSettings()) {
     this.id = id;
     this.lastHour = lastHour;
     this.lastMinute = lastMinute;
@@ -129,12 +113,13 @@ export class Chat {
    */
   public generateRandomDankTimes(): DankTime[] {
     this.randomDankTimes = new Array<DankTime>();
-    for (let i = 0; i < this.myNumberOfRandomTimes; i++) {
-      const now = moment().tz(this.timezone);
+    for (let i = 0; i < this.settings.tryGet("randomtimefrequency"); i++) {
+      const now = moment().tz(this.settings.tryGet("timezone"));
       now.add(now.hours() + Math.floor(Math.random() * 23), "hours");
       now.minutes(Math.floor(Math.random() * 59));
       const text = util.padNumber(now.hours()) + util.padNumber(now.minutes());
-      this.randomDankTimes.push(new DankTime(now.hours(), now.minutes(), [text], this.myPointsPerRandomTime));
+      this.randomDankTimes.push(new DankTime(now.hours(), now.minutes(), [text],
+        this.settings.tryGet("randomtimepoints")));
     }
     return this.randomDankTimes;
   }
@@ -144,19 +129,11 @@ export class Chat {
    */
   public toJSON(): BasicChat {
     return {
-      autoLeaderboards: this.autoLeaderboards,
       dankTimes: this.dankTimes,
-      firstNotifications: this.firstNotifications,
-      hardcoreMode: this.hardcoreMode,
       id: this.myId,
       lastHour: this.myLastHour,
       lastMinute: this.myLastMinute,
-      multiplier: this.myMultiplier,
-      notifications: this.notifications,
-      numberOfRandomTimes: this.myNumberOfRandomTimes,
-      pointsPerRandomTime: this.myPointsPerRandomTime,
-      running: this.running,
-      timezone: this.myTimezone,
+      settings: this.settings.toJSON(),
       users: this.sortedUsers(),
     };
   }
@@ -168,7 +145,7 @@ export class Chat {
   public processMessage(userId: number, userName: string, msgText: string, msgUnixTime: number): string {
 
     // Ignore the message if it was sent more than 1 minute ago.
-    const now = moment().tz(this.timezone);
+    const now = moment().tz(this.settings.tryGet("timezone"));
     if (now.unix() - msgUnixTime >= 60) {
       return "";
     }
@@ -185,7 +162,7 @@ export class Chat {
     }
 
     // If this chat isn't running, don't check anything else.
-    if (!this.running) {
+    if (!this.settings.tryGet("running")) {
       return "";
     }
 
@@ -215,9 +192,9 @@ export class Chat {
           this.users.forEach((user0) => user0.called = false);
           this.lastHour = dankTime.hour;
           this.lastMinute = dankTime.minute;
-          user.addToScore(Math.round(dankTime.points * this.myMultiplier));
+          user.addToScore(Math.round(dankTime.points * this.settings.tryGet("modifier")));
           user.called = true;
-          if (this.firstNotifications) {
+          if (this.settings.tryGet("firstnotifications")) {
             return user.name + " was the first to score!";
           }
         } else if (user.called) { // Else if user already called this time, remove points.
@@ -304,7 +281,7 @@ export class Chat {
   }
 
   public hardcoreModeCheck(timestamp: number) {
-    if (this.hardcoreMode) {
+    if (this.settings.tryGet("hardcoremode")) {
       const day = 24 * 60 * 60;
       const punishBy = 10;
       this.users.forEach((user) => {

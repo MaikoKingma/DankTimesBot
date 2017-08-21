@@ -4,6 +4,10 @@ import * as validators from "./validators";
 
 // This file contains all ChatSettingTemplates used by ChatSettings to create settings from.
 
+// To add a new Chat setting, all you need to do is add a new entry in this file. At most,
+// you will have to create a validator function and if you want to parse a string value
+// to something more exotic than a number, boolean, or timezone, a coercer function as well.
+
 export const ChatSettingTemplates: Array<ChatSettingTemplate<any>> = [
 
   new ChatSettingTemplate("autoleaderboards",
@@ -13,7 +17,7 @@ export const ChatSettingTemplates: Array<ChatSettingTemplate<any>> = [
   new ChatSettingTemplate("firstnotifications", "Whether the first user to score is announced",
     true, validators.firstNotifications, coercers.toBoolean),
 
-  new ChatSettingTemplate("hardcoreMode", "Whether users who haven't scored in the last 24 hours are punished",
+  new ChatSettingTemplate("hardcoremode", "Whether users who haven't scored in the last 24 hours are punished",
     false, validators.hardcoreMode, coercers.toBoolean),
 
   new ChatSettingTemplate("modifier", "Multiplier applied to the score of the first user to score",
