@@ -1,6 +1,6 @@
+import { Chat } from "../chat/chat";
 import { ChatSetting } from "./chat-setting";
 import { ChatSettingTemplate } from "./chat-setting-template";
-import { ChatSettingTemplates } from "./chat-setting-templates";
 import { Validation } from "./validation";
 
 /** Represents a single chat's settings. */
@@ -15,21 +15,22 @@ export class ChatSettings {
    * is supplied, then all settings will have the default values. If any of the fields
    * has an incorrect value, then the corresponding setting's template's default value
    * is used instead.
+   * @param forChat The chat these settings are for.
    * @param literal The parsed JSON object to use the values of.
    * @param templates The setting templates to use.
    */
-  constructor(literal?: any, templates = ChatSettingTemplates) {
+  constructor(forChat: Chat, templates: Array<ChatSettingTemplate<any>>, literal?: any) {
     if (literal !== undefined) {
       templates.forEach((template) => {
         try {
-          this.settings.set(template.name, new ChatSetting(template, literal[template.name]));
+          this.settings.set(template.name, new ChatSetting(forChat, template, literal[template.name]));
         } catch (err) {
-          this.settings.set(template.name, new ChatSetting(template, template.defaultValue));
+          this.settings.set(template.name, new ChatSetting(forChat, template, template.defaultValue));
         }
       });
     } else {
       templates.forEach((template) => {
-        this.settings.set(template.name, new ChatSetting(template, template.defaultValue));
+        this.settings.set(template.name, new ChatSetting(forChat, template, template.defaultValue));
       });
     }
   }

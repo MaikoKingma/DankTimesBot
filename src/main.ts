@@ -34,32 +34,10 @@ tgClient.retrieveBotName().then(() => {
     commands, commands.removeTime, true));
   tgClient.registerCommand(new TelegramBotCommand("reset", "resets the scores",
     commands, commands.resetChat, true, true));
-  tgClient.registerCommand(new TelegramBotCommand("setdailyrandomfrequency",
-    "sets the number of random dank times per day. format: [number]", commands, commands.setDailyRandomTimes, true));
-  tgClient.registerCommand(new TelegramBotCommand("setdailyrandompoints",
-    "sets the points for random daily dank times. format: [number]",
-    commands, commands.setDailyRandomTimesPoints, true));
-  tgClient.registerCommand(new TelegramBotCommand("setmultiplier",
-    "sets the multiplier for the score of the first user to score. format: [number]",
-    commands, commands.setMultiplier, true));
-  tgClient.registerCommand(new TelegramBotCommand("settimezone", "sets the time zone. format: [timezone]",
-    commands, commands.setTimezone, true));
+  tgClient.registerCommand(new TelegramBotCommand("set", "sets the value of a setting",
+    commands, commands.set));
   tgClient.registerCommand(new TelegramBotCommand("settings", "shows the current settings",
     commands, commands.chatSettings));
-  tgClient.registerCommand(new TelegramBotCommand("start", "starts keeping track of scores and sending messages",
-    commands, commands.startChat, true));
-  tgClient.registerCommand(new TelegramBotCommand("stop", "stops keeping track of scores and sending messages",
-    commands, commands.stopChat, true));
-  tgClient.registerCommand(new TelegramBotCommand("toggleautoleaderboards",
-    "toggles whether a leaderboard is auto-posted 1 minute after every dank time",
-    commands, commands.toggleAutoLeaderboards, true));
-  tgClient.registerCommand(new TelegramBotCommand("toggledanktimenotifications",
-    "toggles whether notifications of normal dank times are sent", commands, commands.toggleNotifications, true));
-  tgClient.registerCommand(new TelegramBotCommand("togglefirstnotifications",
-    "toggles whether this chat announces the first user to score", commands, commands.toggleFirstNotifications, true));
-  tgClient.registerCommand(new TelegramBotCommand("togglehardcoremode",
-    "toggles whether every day, users are punished if they haven't scored the previous day",
-    commands, commands.toggleHardcoreMode, true));
   tgClient.setOnAnyText((msg) => {
     if (msg.migrate_to_chat_id) {
       // If the chat was migrated, then update the registry.

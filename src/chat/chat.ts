@@ -21,7 +21,7 @@ export class Chat {
   }
 
   public awaitingResetConfirmation = -1;
-
+  public readonly settings: ChatSettings;
   private myId: number;
   private myLastHour: number;
   private myLastMinute: number;
@@ -37,12 +37,17 @@ export class Chat {
    * @param randomDankTimes The daily randomly generated dank times in this chat.
    * @param settings The chat's settings.
    */
-  constructor(id: number, lastHour = 0, lastMinute = 0, private readonly users = new Map<number, User>(),
-              public readonly dankTimes = new Array<DankTime>(), public randomDankTimes = new Array<DankTime>(),
-              public readonly settings = new ChatSettings()) {
+  constructor(id: number,
+              lastHour = 0,
+              lastMinute = 0,
+              private readonly users = new Map<number, User>(),
+              public readonly dankTimes = new Array<DankTime>(),
+              public randomDankTimes = new Array<DankTime>(),
+              settings?: ChatSettings) {
     this.id = id;
     this.lastHour = lastHour;
     this.lastMinute = lastMinute;
+    this.settings = settings ? settings : new ChatSettings(this);
   }
 
   public set id(id: number) {

@@ -221,7 +221,7 @@ describe("DankTimeScheduler.scheduleRandomDankTimesOfChat(chat)", () => {
     // Prepare.
     const scheduler = new DankTimeScheduler(new TelegramClientMock());
     const chat = new Chat(1234);
-    chat.numberOfRandomTimes = 5;
+    chat.settings.trySetFromString("randomtimefrequency", "5");
     chat.generateRandomDankTimes();
 
     // Act and assert.
@@ -250,18 +250,16 @@ describe("DankTimeScheduler.scheduleAllOfChat(chat)", () => {
   const chat = new Chat(1234);
   chat.addDankTime(new DankTime(12, 12, ["1212"], 5));
   chat.addDankTime(new DankTime(21, 21, ["2121"], 5));
-  chat.numberOfRandomTimes = 5;
+  chat.settings.trySetFromString("randomtimefrequency", "5");
   chat.generateRandomDankTimes();
 
   it("should not schedule anything if the chat is not running", () => {
 
     // Prepare.
     const scheduler = new DankTimeScheduler(new TelegramClientMock());
-    chat.running = false;
-    chat.notifications = true;
-    if (!chat.autoLeaderboards) {
-      chat.autoLeaderboards = !chat.autoLeaderboards;
-    }
+    chat.settings.trySetFromString("running", "false");
+    chat.settings.trySetFromString("notifications", "true");
+    chat.settings.trySetFromString("autoLeaderboards", "true");
 
     // Act and assert.
     scheduler.scheduleAllOfChat(chat);
@@ -274,11 +272,9 @@ describe("DankTimeScheduler.scheduleAllOfChat(chat)", () => {
 
     // Prepare.
     const scheduler = new DankTimeScheduler(new TelegramClientMock());
-    chat.running = true;
-    chat.notifications = false;
-    if (chat.autoLeaderboards) {
-      chat.autoLeaderboards = !chat.autoLeaderboards;
-    }
+    chat.settings.trySetFromString("running", "true");
+    chat.settings.trySetFromString("notifications", "false");
+    chat.settings.trySetFromString("autoLeaderboards", "false");
 
     // Act and assert.
     scheduler.scheduleAllOfChat(chat);
@@ -291,11 +287,9 @@ describe("DankTimeScheduler.scheduleAllOfChat(chat)", () => {
 
     // Prepare.
     const scheduler = new DankTimeScheduler(new TelegramClientMock());
-    chat.running = true;
-    chat.notifications = true;
-    if (chat.autoLeaderboards) {
-      chat.autoLeaderboards = !chat.autoLeaderboards;
-    }
+    chat.settings.trySetFromString("running", "true");
+    chat.settings.trySetFromString("notifications", "true");
+    chat.settings.trySetFromString("autoLeaderboards", "false");
 
     // Act and assert.
     scheduler.scheduleAllOfChat(chat);
@@ -308,11 +302,9 @@ describe("DankTimeScheduler.scheduleAllOfChat(chat)", () => {
 
     // Prepare.
     const scheduler = new DankTimeScheduler(new TelegramClientMock());
-    chat.running = true;
-    chat.notifications = false;
-    if (!chat.autoLeaderboards) {
-      chat.autoLeaderboards = !chat.autoLeaderboards;
-    }
+    chat.settings.trySetFromString("running", "true");
+    chat.settings.trySetFromString("notifications", "false");
+    chat.settings.trySetFromString("autoLeaderboards", "true");
 
     // Act and assert.
     scheduler.scheduleAllOfChat(chat);
@@ -325,11 +317,9 @@ describe("DankTimeScheduler.scheduleAllOfChat(chat)", () => {
 
     // Prepare.
     const scheduler = new DankTimeScheduler(new TelegramClientMock());
-    chat.running = true;
-    chat.notifications = true;
-    if (!chat.autoLeaderboards) {
-      chat.autoLeaderboards = !chat.autoLeaderboards;
-    }
+    chat.settings.trySetFromString("running", "true");
+    chat.settings.trySetFromString("notifications", "true");
+    chat.settings.trySetFromString("autoLeaderboards", "true");
 
     // Act and assert.
     scheduler.scheduleAllOfChat(chat);

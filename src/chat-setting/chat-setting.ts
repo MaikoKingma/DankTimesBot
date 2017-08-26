@@ -1,3 +1,4 @@
+import { Chat } from "../chat/chat";
 import { ChatSettingTemplate } from "./chat-setting-template";
 import { Validation } from "./validation";
 
@@ -9,11 +10,12 @@ export class ChatSetting<T> {
 
   /**
    * Constructs a new setting based on a template and with the supplied value.
+   * @param forChat The chat this setting is for.
    * @param template The template to base this on.
    * @param value A starting value, or the template's default value if undefined.
    * @throws Error if the starting value fails coercion (if it's a string) or validation.
    */
-  constructor(public readonly template: ChatSettingTemplate<T>, value?: T | string) {
+  constructor(private readonly forChat: Chat, public readonly template: ChatSettingTemplate<T>, value?: T | string) {
     if (value !== undefined) {
       if (typeof value === "string") {
         const coerced = this.template.coercer(value);
@@ -43,6 +45,9 @@ export class ChatSetting<T> {
     if (validation.success) {
       this.myValue = coerced;
     }
+    if (this.template.consequence) {
+      this.template.consequence(this.myValue, this.forChat);
+    }
     return validation;
   }
 
@@ -56,6 +61,9 @@ export class ChatSetting<T> {
       throw new Error(validation.message);
     }
     this.myValue = value;
+    if (this.template.consequence) {
+      this.template.consequence(this.myValue, this.forChat);
+    }
   }
 
   /**
