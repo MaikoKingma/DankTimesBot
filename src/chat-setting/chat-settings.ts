@@ -1,7 +1,7 @@
 import { Chat } from "../chat/chat";
 import { ChatSetting } from "./chat-setting";
-import { ChatSettingTemplate } from "./chat-setting-template";
-import { Validation } from "./validation";
+import { Validation } from "./functions/validation";
+import { ChatSettingTemplate } from "./template/chat-setting-template";
 
 /** Represents a single chat's settings. */
 export class ChatSettings {
@@ -9,30 +9,10 @@ export class ChatSettings {
   /** This ChatSetting's settings. */
   public readonly settings = new Map<string, ChatSetting<any>>();
 
-  /**
-   * Constructs a new ChatSettings from the supplied literal. Any missing fields
-   * in the literal are given the corresponding setting's template's default values. If no literal
-   * is supplied, then all settings will have the default values. If any of the fields
-   * has an incorrect value, then the corresponding setting's template's default value
-   * is used instead.
-   * @param forChat The chat these settings are for.
-   * @param literal The parsed JSON object to use the values of.
-   * @param templates The setting templates to use.
-   */
-  constructor(forChat: Chat, templates: Array<ChatSettingTemplate<any>>, literal?: any) {
-    if (literal !== undefined) {
-      templates.forEach((template) => {
-        try {
-          this.settings.set(template.name, new ChatSetting(forChat, template, literal[template.name]));
-        } catch (err) {
-          this.settings.set(template.name, new ChatSetting(forChat, template, template.defaultValue));
-        }
-      });
-    } else {
-      templates.forEach((template) => {
-        this.settings.set(template.name, new ChatSetting(forChat, template, template.defaultValue));
-      });
-    }
+  constructor(settings: Array<ChatSetting<any>>) {
+    settings.forEach((setting) => {
+      this.settings.set(setting.template.name, setting);
+    });
   }
 
   /**

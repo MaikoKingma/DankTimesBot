@@ -1,6 +1,6 @@
 import { Chat } from "../chat/chat";
-import { ChatSettingTemplate } from "./chat-setting-template";
-import { Validation } from "./validation";
+import { Validation } from "./functions/validation";
+import { ChatSettingTemplate } from "./template/chat-setting-template";
 
 /** Describes a setting of a chat, based on a setting template. */
 export class ChatSetting<T> {

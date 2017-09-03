@@ -2,8 +2,8 @@ import { assert } from "chai";
 import "mocha";
 import { Chat } from "../chat/chat";
 import { ChatSetting } from "./chat-setting";
-import { ChatSettingTemplate } from "./chat-setting-template";
-import { Validation } from "./validation";
+import { Validation } from "./functions/validation";
+import { ChatSettingTemplate } from "./template/chat-setting-template";
 
 function testValidator(newValue: number, oldValue: number): Validation {
   if (newValue > 6) {

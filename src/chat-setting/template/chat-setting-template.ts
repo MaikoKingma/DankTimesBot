@@ -1,5 +1,5 @@
-import { Chat } from "../chat/chat";
-import { Validation } from "./validation";
+import { Chat } from "../../chat/chat";
+import { Validation } from "../functions/validation";
 
 /** Describes an arbitrary setting every chat should have. */
 export class ChatSettingTemplate<T> {

@@ -1,5 +1,5 @@
-import { Chat } from "../chat/chat";
-import { DankTimeScheduler } from "../dank-time-scheduler/dank-time-scheduler";
+import { Chat } from "../../chat/chat";
+import { DankTimeScheduler } from "../../dank-time-scheduler/dank-time-scheduler";
 
 /**
  * Contains consequences for some of the default chat settings.

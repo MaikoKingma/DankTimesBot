@@ -2,11 +2,11 @@ import { assert } from "chai";
 import "mocha";
 import { Chat } from "../chat/chat";
 import { ChatSetting } from "./chat-setting";
-import { ChatSettingTemplate } from "./chat-setting-template";
-import { ChatSettingTemplates } from "./chat-setting-templates";
 import { ChatSettings } from "./chat-settings";
-import * as coercers from "./coercers";
-import { Validation } from "./validation";
+import * as coercers from "./functions/coercers";
+import { Validation } from "./functions/validation";
+import { ChatSettingTemplate } from "./template/chat-setting-template";
+import { ChatSettingTemplates } from "./template/chat-setting-templates";
 
 function testValidator(newValue: number, oldValue: number): Validation {
   if (newValue > 6) {
