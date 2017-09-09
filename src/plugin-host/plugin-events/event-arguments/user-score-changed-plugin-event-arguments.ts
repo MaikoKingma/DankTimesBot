@@ -1,5 +1,6 @@
 import { BasicUser } from "../../../user/basic-user";
 import { PluginEventArguments } from "../plugin-event-arguments";
+import { Chat } from "../../../chat/chat";
 
 /**
  * Event Arguments for the User Score Changed event.
@@ -21,9 +22,9 @@ export class UserScoreChangedPluginEventArguments extends PluginEventArguments
    * @param _user User that changed score.
    * @param _changeInScore Delta score.
    */
-  constructor(_user: BasicUser, _changeInScore: number)
+  constructor(_hostChat: Chat, _user: BasicUser, _changeInScore: number)
   {
-    super();
+    super(_hostChat);
     this.User = _user;
     this.ChangeInScore = _changeInScore;
   }

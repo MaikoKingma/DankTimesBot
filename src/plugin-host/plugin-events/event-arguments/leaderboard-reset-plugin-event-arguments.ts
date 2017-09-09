@@ -19,7 +19,7 @@ export class LeaderboardResetPluginEventArguments extends PluginEventArguments
    */
   constructor(_chat: Chat)
   {
-    super();
+    super(_chat);
     this.Chat = _chat;
   }
 }

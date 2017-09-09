@@ -91,7 +91,7 @@ setInterval(() => {
 setInterval(() => {
   chatRegistry.chats.forEach((chat) => {
     if(chat.pluginHost == null) return;
-    let messages: string[] = chat.pluginHost.Trigger(PLUGIN_EVENT.PLUGIN_EVENT_TIMER_TICK, new PrePostMessagePluginEventArguments("Timer!"));
+    let messages: string[] = chat.pluginHost.Trigger(PLUGIN_EVENT.PLUGIN_EVENT_TIMER_TICK, new PrePostMessagePluginEventArguments(chat, "Timer!"));
     if(messages.length > 0) messages.forEach((message) => {if(message.length === 0) return; console.log(message); tgClient.sendMessage(chat.id, message[0])});
   })
 }, 5000)

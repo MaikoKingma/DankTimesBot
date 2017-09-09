@@ -1,4 +1,5 @@
 import { PluginEventArguments } from "../plugin-event-arguments";
+import { Chat } from "../../../chat/chat";
 
 /**
  * Event Arguments for the Pre / Post message.
@@ -15,9 +16,9 @@ export class PrePostMessagePluginEventArguments extends PluginEventArguments
    * Constructor.
    * @param _message Raw telegram message.
    */
-  constructor(_message: string)
+  constructor(_hostChat: Chat, _message: string)
   {
-    super();
+    super(_hostChat);
     this.Message = _message;
   }
 }
