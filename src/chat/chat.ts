@@ -10,6 +10,7 @@ import { PLUGIN_EVENT } from "../plugin-host/plugin-events/plugin-event-types";
 import { PrePostMessagePluginEventArguments } from "../plugin-host/plugin-events/event-arguments/pre-post-message-plugin-event-arguments";
 import { UserScoreChangedPluginEventArguments } from "../plugin-host/plugin-events/event-arguments/user-score-changed-plugin-event-arguments";
 import { LeaderboardResetPluginEventArguments } from "../plugin-host/plugin-events/event-arguments/leaderboard-reset-plugin-event-arguments";
+import { LeaderboardEditPluginEventArguments } from "../plugin-host/plugin-events/event-arguments/leaderboard-edit-plugin-event-arguments";
 
 export class Chat {
 
@@ -383,6 +384,20 @@ export class Chat {
     this.myLastLeaderboard = new Leaderboard(Array.from(this.users.values()));
     let leaderboard = "<b>--- " + (final ? "FINAL " : "") + "LEADERBOARD ---</b>\n";
     leaderboard += this.myLastLeaderboard.toString(oldLeaderboard);
+
+    //Add lines from plugins to the leaderboard
+    const linesToAdd = this.pluginHost.Trigger(PLUGIN_EVENT.PLUGIN_EVENT_LEADERBOARD_EDIT, new LeaderboardEditPluginEventArguments(this));
+    if (linesToAdd.length === 0) {
+      let leaderboardLines = leaderboard.split("\n");
+      linesToAdd.forEach(line => {
+        leaderboardLines.splice(line.lineNumeber, 0, line.text);
+      })
+      //Recreate leaderboard
+      leaderboard = "";
+      for (let line in leaderboardLines) {
+        leaderboard += line + "\n";
+      }
+    }
 
     // Reset last score change values of all users.
     const userIterator = this.users.values();

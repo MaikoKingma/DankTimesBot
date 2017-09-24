@@ -4,6 +4,8 @@ import { PrePostMessagePluginEventArguments } from "./plugin-events/event-argume
 import { UserScoreChangedPluginEventArguments } from "./plugin-events/event-arguments/user-score-changed-plugin-event-arguments";
 import { LeaderboardResetPluginEventArguments } from "./plugin-events/event-arguments/leaderboard-reset-plugin-event-arguments";
 import { TimerTickPluginEventArguments } from "./plugin-events/event-arguments/timer-tick-plugin-event-arguments";
+import { LeaderboardLine } from "../leaderboard/leaderboard-line";
+import { LeaderboardEditPluginEventArguments } from "./plugin-events/event-arguments/leaderboard-edit-plugin-event-arguments";
 
 /**
  * Class exposing the Plugin Host concept.
@@ -39,13 +41,25 @@ export class PluginHost
   public Trigger(_event: PLUGIN_EVENT.PLUGIN_EVENT_USER_CHANGED_SCORE, _input: UserScoreChangedPluginEventArguments): string[];
   public Trigger(_event: PLUGIN_EVENT.PLUGIN_EVENT_LEADERBOARD_RESET, _input: LeaderboardResetPluginEventArguments): string[];
   public Trigger(_event: PLUGIN_EVENT.PLUGIN_EVENT_TIMER_TICK, _input: TimerTickPluginEventArguments): string[];
+  public Trigger(_event: PLUGIN_EVENT.PLUGIN_EVENT_LEADERBOARD_EDIT, _input: LeaderboardEditPluginEventArguments): LeaderboardLine[];
   /**
    * Trigger a certain event on this Plugin Host's plugins.
    * @param _event Event to trigger.
    * @param _input Data input.
    */
-  public Trigger(_event: PLUGIN_EVENT, _input: any): string[]
+  public Trigger(_event: PLUGIN_EVENT, _input: any): any
   {
-    return (<string[]>[]).concat(this.Plugins.map(output => output.Trigger(_event, _input)));
+    switch (_event)
+    {
+      case PLUGIN_EVENT.PLUGIN_EVENT_LEADERBOARD_EDIT:
+      {
+        console.log("case leaderbaord edit");
+        return (<LeaderboardLine[]>[]).concat(this.Plugins.map(output => output.Trigger(_event, _input)));
+      }
+      default:
+      {
+        return (<string[]>[]).concat(this.Plugins.map(output => output.Trigger(_event, _input)));
+      }
+    }
   }
 }
